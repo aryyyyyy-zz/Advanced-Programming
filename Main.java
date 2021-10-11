@@ -80,6 +80,11 @@ public class Main {
 			for (int j=0; j<citizens.size();j++) {
 				if (citizens.get(j).getID() == id) {
 					c = citizens.get(j);
+					if (c.getStatus()) {
+						System.out.println("Citizen is already fully vaccinated");
+						break;
+					}
+					
 					System.out.print("1. Search by area\n2. Search by Vaccine\n3. Exit\nEnter option: ");
 						val = sc.nextInt();
 						int hosp_id;
@@ -97,7 +102,7 @@ public class Main {
 							for (int i=0; i<hospitals.size(); i++) {
 								if (hospitals.get(i).getID() == hosp_id) {
 									h = hospitals.get(i);
-									h.displaySlot(c);
+									h.displaySlot(c, vaccines);
 									break;
 								}
 							}
@@ -109,6 +114,10 @@ public class Main {
 							List<Integer> ids=new ArrayList<Integer>();  
 							System.out.print("Enter Vaccine name: ");
 							v1 = sc.next();
+							if (!c.getVac().equals("") && !c.getVac().equalsIgnoreCase(v1)) {
+								System.out.println("Citizen was vaccinated with "+ c.getVac() + " first, thus can't be vaccinated with " + v1+" next");
+								break;
+							}
 							for (int i=0; i<hospitals.size(); i++ ) hospitals.get(i).displayListByVac(v1);
 								
 							System.out.print("Enter hospital id: ");
@@ -118,7 +127,7 @@ public class Main {
 							for (int i=0; i<hospitals.size(); i++) {
 								if (hospitals.get(i).getID() == hosp_id) {
 									h = hospitals.get(i);
-									h.displaySlot(v1, c);
+									h.displaySlot(v1, c, vaccines);
 									
 									break;
 								}
@@ -198,6 +207,10 @@ class Slot {
 		
 	}
 	
+	public int getDay() {
+		return this.day;
+	}
+	
 	public String getVaccineName() {
 		return this.vac;
 	}
@@ -210,11 +223,13 @@ class Slot {
 		System.out.println(this.slotNumber + "-> Day:"+ this.day +" Available Qty:" + this.quantity +" Vaccine:" +this.vac);
 	}
 	
-	public boolean book(Citizen c) {
+	public boolean book(Citizen c, List<Vaccine> vaccines) {
 		if (this.quantity>0) {
-			this.quantity--;
-			System.out.println(c.getName() +" vaccinated with " + this.vac);
-			c.update(this.day, this.vac);
+					
+				this.quantity--;
+				System.out.println(c.getName() +" vaccinated with " + this.vac);
+				c.update(this.day, this.vac, vaccines);
+			
 		}
 		
 		if (this.quantity == 0) {
@@ -231,58 +246,73 @@ class Citizen {
 	private int age;
 	private long id;
 	private int day;
+	private int due_date;
 	private String vaccine;
 	private int dosesgiven;
+	private boolean status;
 	
 	Citizen(String name, int age, long id) {
 		this.name = name;
 		this.age = age;
 		this.id = id;
 		this.dosesgiven = 0;
+		this.day = 0;
+		this.due_date = 0;
+		this.vaccine = "";
+		this.status = false;
 		this.display();
-		
+	}
+	
+	public String getVac() {
+		return this.vaccine;
+	}
+	
+	public boolean getStatus() {
+		return this.status;
+	}
+	
+	public int getduedate() {
+		return this.due_date;
 	}
 	
 	public String getName() {
 		return this.name;
 	}
 	
-	public void update(int day, String vac) {
+	public void update(int day, String vac, List<Vaccine> vaccines) {
 		this.day = day;
 		this.vaccine = vac;
 		this.dosesgiven++;
+		for(int i=0; i<vaccines.size(); i++) {
+			if (vaccines.get(i).getName().equalsIgnoreCase(vac)) {
+				int doses = vaccines.get(i).getDoses();
+				if (this.dosesgiven == doses) this.status = true;
+				this.due_date = vaccines.get(i).getGap() + this.day;
+				break;
+			}
+		}
 	}
 	public void display() {
 		System.out.println("Citizen Name: " + this.name +", Age: "+ this.age + ", Unique ID: "+ this.id);
 	}
 	
 	public void status(List<Vaccine> vaccines) {
-		int gap, dosesNeeded;
 		if (this.dosesgiven==0) {
 			System.out.println("Citizen REGISTERED");
 			return;
 		}
-		for(int i=0; i<vaccines.size(); i++) {
-			if (vaccines.get(i).getName() == this.vaccine) {
-				gap = vaccines.get(i).getGap();
-				dosesNeeded = vaccines.get(i).getDoses();
-				if (this.dosesgiven < dosesNeeded) {
+		
+		else if (!this.status) {
 					System.out.println("PARTIALLY VACCINATED");
 					System.out.println("Vaccine given: " + this.vaccine);
 					System.out.println("Number of doses given: " + this.dosesgiven);
-					int date;
-					date  = this.day + gap;
-					System.out.println("Next dose due date: " + date);
+					System.out.println("Next dose due date: " + this.due_date);
 				}
-				else {
+		else {
 					System.out.println("FULLY VACCINATED");
 					System.out.println("Vaccine given: " + this.vaccine);
 					System.out.println("Number of doses given: " + this.dosesgiven);
 				}
-				break;
-			}
-		}
-		
 		
 	}
 	
@@ -368,37 +398,49 @@ class Hospital {
 		
 	}
 	
-	public void displaySlot(Citizen c) {
+	public void displaySlot(Citizen c, List<Vaccine> vaccines) {
+		boolean flag = false;
 		
-		for (int i =0; i<slots.size(); i++) slots.get(i).display();
-		if (slots.size()==0) System.out.println("No slots available");
+		for (int i =0; i<slots.size(); i++) {
+			if (c.getduedate()!=0 && c.getduedate() > slots.get(i).getDay()) continue;
+			else { 
+				slots.get(i).display();
+				flag = true;
+			}
+		}
+		
+		if (!flag) System.out.println("No slots available");
 		else {
 			Scanner sc = new Scanner(System.in);
 			System.out.print("Choose Slot: ");
 			int slotChoice = sc.nextInt();
-			this.bookSlot(slotChoice, c);
+			this.bookSlot(slotChoice, c, vaccines);
 			
 		}
 	}
 	
-	public void displaySlot(String vac, Citizen c) {
+	public void displaySlot(String vac, Citizen c, List<Vaccine> vaccines) {
+		boolean flag = false;
+		
 		for (int i =0; i<slots.size(); i++) {
-			if (slots.get(i).getVaccineName().equalsIgnoreCase(vac)) {
+			if (c.getduedate()!=0 && c.getduedate() > slots.get(i).getDay()) continue;
+			else if (slots.get(i).getVaccineName().equalsIgnoreCase(vac)) {
 				slots.get(i).display();
+				flag = true;
 			}
 		}
-		if (slots.size()==0) System.out.println("No slots available");
+		if (!flag) System.out.println("No slots available");
 		else {
 			Scanner sc = new Scanner(System.in);
 			System.out.print("Choose Slot: ");
 			int slotChoice = sc.nextInt();
-			this.bookSlot(slotChoice, c);
+			this.bookSlot(slotChoice, c,vaccines);
 		}
 	}
-	public void bookSlot(int slotNumber, Citizen c) {
+	public void bookSlot(int slotNumber, Citizen c, List<Vaccine> vaccines) {
 		for (int i =0; i<slots.size(); i++) {
 			if (slots.get(i).getslotNumber() == slotNumber) {
-				if (!slots.get(i).book(c)) slots.remove(i);
+				if (!slots.get(i).book(c, vaccines)) slots.remove(i);
 			}
 		
 		}
