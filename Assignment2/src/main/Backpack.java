@@ -1,27 +1,25 @@
-/**
- * 
- */
+
 package main;
 
-/**
+/*
  * @author arya
- *
  */
 
 interface LearningEnv {
 	void displayMenu();
+	void viewLec();
+	void viewAssessments();
+	void viewComments();
+	void addComments();
+	void logout();
 	
 }
-public class Backpack implements LearningEnv{
+public class Backpack{
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 	}
 
-	@Override
 	public void displayMenu() {
 		System.out.println("Welcome to Backpack\n" + 
 				"1. Enter as instructor\n" + 
@@ -43,9 +41,57 @@ class Student implements LearningEnv{
 				"6. Add comments\n" + 
 				"7. Logout");
 	}
+	
+	@Override
+	public void viewLec() {
+		
+	}
+	
+	@Override
+	public void viewAssessments() {
+		
+	}
+	
+	@Override
+	public void viewComments() {
+		
+	}
+	
+	@Override
+	public void addComments() {
+		
+	}
+	
+	@Override
+	public void logout() {
+		
+	}
 }
 
+class Lectureslide {
+	private String title;
+	private int count;
+	private String[] content = new String[100];
+	
+	public Lectureslide(String title, int num, String[] slides) {
+		// TODO Auto-generated constructor stub
+		this.title = title;
+		this.count = num;
+		
+		
+	}
+}
+
+class Lecturevid {
+	private String title;
+	
+}
 class Instructor implements LearningEnv{
+	
+	private int id;
+	private String name;
+	
+	
 	@Override
 	public void displayMenu() {
 		System.out.println("INSTRUCTOR MENU\n" + 
@@ -58,5 +104,30 @@ class Instructor implements LearningEnv{
 				"7. View comments\n" + 
 				"8. Add comments\n" + 
 				"9. Logout");
+	}
+	
+	
+	@Override
+	public void viewLec() {
+		
+	}
+	
+	@Override
+	public void viewAssessments() {
+		
+	}
+	
+	@Override
+	public void viewComments() {
+		
+	}
+	
+	public void addComments() {
+		
+	}
+	
+	@Override
+	public void logout() {
+		
 	}
 }
