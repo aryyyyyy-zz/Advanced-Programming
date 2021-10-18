@@ -11,6 +11,9 @@ import java.io.*;
 
 interface LearningEnv {
 	void displayMenu();
+	void print();
+	String getName();
+	int getid();
 	void viewLec();
 	void viewAssessments();
 	void viewComments();
@@ -27,6 +30,7 @@ public class Backpack{
 		
 		int choice = 0;
 		List<Instructor> instructorList = new ArrayList<Instructor>();
+		List<Student> studentList = new ArrayList<Student>();
 		List<Material> material = new ArrayList<Material>();
 		List<Material> assessment = new ArrayList<Material>();
 		
@@ -39,9 +43,9 @@ public class Backpack{
 					instructorList.get(i).print();
 				}
 				System.out.print("Choose id: ");
-				int id = sc.nextInt();
+				int i_id = sc.nextInt();
 				for (int i = 0; i < instructorList.size(); i++) {
-					if (instructorList.get(i).getid() == id) {
+					if (instructorList.get(i).getid() == i_id) {
 						Instructor I = instructorList.get(i);
 						int val=0;
 						do {
@@ -83,6 +87,43 @@ public class Backpack{
 				
 				break;
 			case 2:
+				for (int i = 0; i < studentList.size(); i++) {
+					studentList.get(i).print();
+				}
+				System.out.print("Choose id: ");
+				int s_id = sc.nextInt();
+				for (int i = 0; i < instructorList.size(); i++) {
+					if (instructorList.get(i).getid() == s_id) {
+						Instructor I = instructorList.get(i);
+						int val=0;
+						do {
+						System.out.println("Welcome " + I.getName());
+						I.displayMenu();
+						val = sc.nextInt();
+						switch(val) {
+						case 1:
+							break;
+						case 2:
+							break;
+						case 3:
+							break;
+						case 4:
+							break;
+						case 5:
+							break;
+						case 6:
+							break;
+						case 7:
+							System.out.println("Logging out " + I.getName());
+							break;
+						default:
+							System.out.println("Invalid choice");
+							break;
+						}
+						} while(val!=7);
+						break;
+					}
+				}
 				break;
 			default: 
 				System.out.println("Invalid choice");
@@ -101,6 +142,21 @@ public class Backpack{
 }
 
 class Student implements LearningEnv{
+	private String name;
+	private int id;
+	
+	public void print() {
+		System.out.println(this.id + " - " + this.name);
+	}
+	
+	public String getName() {
+		return this.name;
+	}
+	
+	public int getid() {
+		return this.id;
+	}
+	
 	@Override
 	public void displayMenu() {
 		System.out.println("STUDENT MENU\n" + 
