@@ -1,12 +1,8 @@
 package main;
 import java.util.*;
-import java.io.*;
-
 /*
  * @author arya
- */
-/*
- * if (!(file.substring(file.length()-3, file.length()).contentEquals(".mp4"))) System.out.println("Invalid file format");
+ * @roll number 2020498
  */
 
 interface LearningEnv {
@@ -32,10 +28,10 @@ public class Backpack{
 		List<Material> assessment = new ArrayList<Material>();
 		List<Material> openAssessment = new ArrayList<Material>();
 		
-		Instructor I1 = new Instructor(0, "I0");
-		Instructor I2 = new Instructor(1, "I1");
+		Instructor I0 = new Instructor(0, "I0");
+		Instructor I1 = new Instructor(1, "I1");
+		instructorList.add(I0);
 		instructorList.add(I1);
-		instructorList.add(I2);
 		
 		Student S0 = new Student(0, "S0");
 		Student S1 = new Student(1, "S1");
@@ -239,7 +235,8 @@ class Student implements LearningEnv{
 		for (Material a: submittedAssessment) if (a.isGraded()) a.displayGrades();
 		System.out.println("----------------");
 		System.out.println("Ungraded submissions");
-		for (Material a: submittedAssessment) if (!(a.isGraded())) a.displayGrades();
+		for (Material a: submittedAssessment) if (!(a.isGraded())) a.display();
+		System.out.println("----------------");
 	}
 	
 	public void displaySol(Material A) {
@@ -247,6 +244,9 @@ class Student implements LearningEnv{
 	}
 	
 	public void pendingAss() {
+		if (pendingAssessment.size()==0) System.out.println("No pending assessments");
+		else{
+		System.out.println("Pending assessments");
 		Scanner sc = new Scanner(System.in);
 		for (int i=0; i<pendingAssessment.size(); i++) {
 			System.out.print("ID: " + i + " " );
@@ -270,7 +270,7 @@ class Student implements LearningEnv{
 			this.submit(A);
 			A.submit(this, sol);
 		}
-	
+	}
 	}
 	public void print() {
 		System.out.println(this.id + " - " + this.name);
@@ -379,11 +379,12 @@ class Assignment implements Material {
 	
 	public void displayGrades() {
 		System.out.println("Submission: " + this.solution);
+		System.out.println("----------------");
 		System.out.println("Marks: " + this.marks);
 	}
 	
 	public void display() {
-		System.out.println("Assignment: " + this.problem + "Max Marks: " + this.MM);
+		System.out.println("Assignment: " + this.problem + " Max Marks: " + this.MM);
 		System.out.println("----------------");
 	}
 	
@@ -440,6 +441,7 @@ class Quiz implements Material {
 	
 	public void displayGrades() {
 		System.out.println("Submission: " + this.solution);
+		System.out.println("----------------");
 		System.out.println("Marks: " + this.marks);
 	}
 	
@@ -583,6 +585,7 @@ class Instructor implements LearningEnv{
 		System.out.println("1. Add Assignment\n" + 
 				"2. Add Quiz");
 		choice = sc.nextInt();
+		String dummy = sc.nextLine();
 		
 		if (choice==1) {
 			System.out.print("Enter problem statement: "); 
