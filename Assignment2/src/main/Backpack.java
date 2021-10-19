@@ -102,7 +102,7 @@ public class Backpack{
 									System.out.print("Marks secured: ");
 									int marks = sc.nextInt();
 									int num3 = assessment.get(id).getid();
-									student.grade(marks, num3);
+									student.grade(marks, num3, I);
 									break;
 								}
 							}
@@ -235,9 +235,9 @@ class Student implements LearningEnv {
 		this.name = name;
 	}
 	
-	public void grade(int marks, int id) {
+	public void grade(int marks, int id, Instructor I) {
 		for (Material a: this.assessment) if(a.getid() == id) {
-			a.grade(marks);
+			a.grade(marks, I.getName());
 			break;
 		}
 	}
@@ -351,7 +351,7 @@ interface Material {
 	void display();
 	int getMM();
 	int getid();
-	void grade(int marks);
+	void grade(int marks, String name);
 	char type();
 	void submit(String solution);
 	String getsol();
@@ -374,6 +374,7 @@ class Assignment implements Material {
 	private boolean submitted =false;
 	private boolean open = true;
 	private String solution;
+	private String prof;
 	private int id;
 	
 	Assignment(int marks, String problem, int count) {
@@ -411,7 +412,8 @@ class Assignment implements Material {
 		return this.MM;
 	}
 	
-	public void grade(int marks) {
+	public void grade(int marks, String name) {
+		this.prof = name;
 		this.marks = marks;
 		this.graded = true;
 	}
@@ -422,7 +424,8 @@ class Assignment implements Material {
 	
 	public void displayGrades() {
 		System.out.println("Submission: " + this.solution);
-		System.out.println("Marks: " + this.marks + "\n");
+		System.out.println("Marks: " + this.marks);
+		System.out.println("Graded by: " + this.prof + "\n");
 	}
 	
 	public void display() {
@@ -443,6 +446,7 @@ class Quiz implements Material {
 	private boolean submitted = false;
 	private boolean open = true;
 	private int id;
+	private String prof;
 	private String solution;
 	
 	Quiz(String problem, int count) {
@@ -486,7 +490,8 @@ class Quiz implements Material {
 	}
 	
 	@Override
-	public void grade(int marks) {
+	public void grade(int marks, String name) {
+		this.prof = name;
 		this.marks = marks;
 		this.graded = true;
 	}
