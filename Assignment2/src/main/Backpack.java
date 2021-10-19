@@ -23,7 +23,6 @@ interface LearningEnv {
 }
 
 public class Backpack{
-
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Scanner sc = new Scanner(System.in);
@@ -31,8 +30,21 @@ public class Backpack{
 		int choice = 0;
 		List<Instructor> instructorList = new ArrayList<Instructor>();
 		List<Student> studentList = new ArrayList<Student>();
+		List<Comment> comments = new ArrayList<Comment>();
 		List<Material> material = new ArrayList<Material>();
 		List<Material> assessment = new ArrayList<Material>();
+		
+		Instructor I1 = new Instructor(0, "I0");
+		Instructor I2 = new Instructor(1, "I1");
+		instructorList.add(I1);
+		instructorList.add(I2);
+		
+		Student S0 = new Student(0, "S0");
+		Student S1 = new Student(1, "S1");
+		Student S2 = new Student(2, "S2");
+		studentList.add(S0);
+		studentList.add(S1);
+		studentList.add(S2);
 		
 		do {
 			displayMenu();
@@ -55,13 +67,14 @@ public class Backpack{
 						switch(val) {
 						case 1:
 							Material M = I.addMaterial();
-							material.add(M);
+							if (M!=null) material.add(M);
 							break;
 						case 2:
 							Material A = I.addAssessment();
 							assessment.add(A);
 							break;
 						case 3:
+							for (int j=0; j<material.size(); j++) material.get(j).display();
 							break;
 						case 4:
 							break;
@@ -70,8 +83,11 @@ public class Backpack{
 						case 6:
 							break;
 						case 7:
+							for (int k= 0; k< comments.size(); k++) comments.get(k).display();
 							break;
 						case 8:
+							Comment c = new Comment(I.getName());
+							comments.add(c);
 							break;
 						case 9:
 							System.out.println("Logging out " + I.getName());
@@ -90,18 +106,19 @@ public class Backpack{
 				for (int i = 0; i < studentList.size(); i++) {
 					studentList.get(i).print();
 				}
-				System.out.print("Choose id: ");
+				System.out.print("Choose id: ");	
 				int s_id = sc.nextInt();
-				for (int i = 0; i < instructorList.size(); i++) {
-					if (instructorList.get(i).getid() == s_id) {
-						Instructor I = instructorList.get(i);
+				for (int i = 0; i < studentList.size(); i++) {
+					if (studentList.get(i).getid() == s_id) {
+						Student S = studentList.get(i);
 						int val=0;
 						do {
-						System.out.println("Welcome " + I.getName());
-						I.displayMenu();
+						System.out.println("Welcome " + S.getName());
+						S.displayMenu();
 						val = sc.nextInt();
 						switch(val) {
 						case 1:
+							for (int j=0; j<material.size(); j++) material.get(j).display();
 							break;
 						case 2:
 							break;
@@ -110,11 +127,14 @@ public class Backpack{
 						case 4:
 							break;
 						case 5:
+							for (int k= 0; k< comments.size(); k++) comments.get(k).display();
 							break;
 						case 6:
+							Comment c = new Comment(S.getName());
+							comments.add(c);
 							break;
 						case 7:
-							System.out.println("Logging out " + I.getName());
+							System.out.println("Logging out " + S.getName());
 							break;
 						default:
 							System.out.println("Invalid choice");
@@ -141,9 +161,34 @@ public class Backpack{
 	
 }
 
+class Comment {
+	String statement;
+	Date date;
+	
+	Comment(String person) {
+		String comment; 
+		Scanner sc = new Scanner(System.in);
+		System.out.print("Enter comment: ");
+		comment = sc.nextLine();
+		this.statement = comment + " - " + person;
+		this.date = java.util.Calendar.getInstance().getTime(); 
+	}
+	
+	public void display() {
+		System.out.println(this.statement);
+		System.out.println(this.date + "\n");
+	}
+}
+
 class Student implements LearningEnv{
 	private String name;
 	private int id;
+	
+	public Student(int id, String name) {
+		// TODO Auto-generated constructor stub
+		this.id = id;
+		this.name = name;
+	}
 	
 	public void print() {
 		System.out.println(this.id + " - " + this.name);
@@ -234,7 +279,7 @@ class Lectureslide implements Material {
 	
 	public Lectureslide(String title, int num, String[] slides, Instructor I) {
 		// TODO Auto-generated constructor stub
-		date=java.util.Calendar.getInstance().getTime();  
+		this.date=java.util.Calendar.getInstance().getTime();  
 		this.title = title;
 		this.count = num;
 		this.content = new String[num];
@@ -247,7 +292,7 @@ class Lectureslide implements Material {
 		for (int i=0; i<this.count; i++) System.out.println("Slide " + i + ": " + content[i]);
 		System.out.println("Number of slides: " + this.count);
 		System.out.println("Date of upload: " + this.date);
-		System.out.println("Uploaded by: " + this.instructorName);
+		System.out.println("Uploaded by: " + this.instructorName + "\n");
 		
 	}
 }
@@ -260,7 +305,7 @@ class Lecturevid implements Material{
 	
 	public Lecturevid(String title, String file, Instructor I) {
 		// TODO Auto-generated constructor stub
-		date=java.util.Calendar.getInstance().getTime();  
+		this.date=java.util.Calendar.getInstance().getTime();  
 		this.title = title;
 		this.file = file;
 		this.instructorName = I.getName();
@@ -270,7 +315,7 @@ class Lecturevid implements Material{
 		System.out.println("Title: " + this.title);
 		System.out.println("Video file: " + this.file);
 		System.out.println("Date of upload: " + this.date);
-		System.out.println("Uploaded by: " + this.instructorName);
+		System.out.println("Uploaded by: " + this.instructorName + "\n");
 		
 	}
 	
@@ -281,6 +326,12 @@ class Instructor implements LearningEnv{
 	private int id;
 	private String name;
 	
+	public Instructor(int id, String name) {
+		// TODO Auto-generated constructor stub
+		this.id = id;
+		this.name = name;
+		
+	}
 	public void print() {
 		System.out.println(this.id + " - " + this.name);
 	}
@@ -307,20 +358,22 @@ class Instructor implements LearningEnv{
 	}
 	
 	public Material addMaterial() {
-		Material M;
+		Material M = null;
 		int choice, num;
-		String title, file;
+		String title, file, dummy;
 		String [] slides;
 		Scanner sc = new Scanner(System.in);
 		System.out.println("1. Add Lecture Slide\n" + 
 				"2. Add Lecture Video");
 		choice = sc.nextInt();
+		dummy = sc.nextLine();
 		
 		if (choice==1) {
 			System.out.print("Enter topic of slides: "); 
 			title = sc.nextLine();
 			System.out.print("Enter number of slides: ");
 			num = sc.nextInt();
+			dummy = sc.nextLine();
 			slides = new String[num];
 			System.out.println("Enter content of slides");
 			for (int i=0; i<num; i++) {
@@ -334,7 +387,8 @@ class Instructor implements LearningEnv{
 			title = sc.nextLine();
 			System.out.print("Enter filename of video: ");
 			file = sc.nextLine();
-			M = new Lecturevid(title, file, this);
+			if (!(file.substring(file.length()-4, file.length()).equals(".mp4"))) System.out.println("Invalid file format");
+			else M = new Lecturevid(title, file, this);
 		}	
 		//error handling missed relating to choice =/= 1,2
 		return M;	
