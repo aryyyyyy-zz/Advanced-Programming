@@ -71,6 +71,7 @@ public class Backpack{
 							Material A = I.addAssessment();
 							assessment.add(A);
 							openAssessment.add(A);
+							for (Student student : studentList) student.addWork(A);
 							break;
 						case 3:
 							for (int j=0; j<material.size(); j++) material.get(j).display();
@@ -89,13 +90,14 @@ public class Backpack{
 							}	
 							System.out.print("Enter ID of assessment to view submissions: ");
 							int id = sc.nextInt();
+							Material a = assessment.get(id);
 							System.out.println("Choose ID from these ungraded submissions");
-							assessment.get(id).displayungradedList();
+							a.displayungradedList();
 							int num1 = sc.nextInt();
 							for (Student student : studentList) {
 								if (student.getid() == num1) {
 									System.out.println("Submission");
-									//incomplete
+									student.displaySol(a);
 									System.out.println("Max marks: " + assessment.get(id).getMM());
 									System.out.print("Marks secured: ");
 									int marks = sc.nextInt();
@@ -160,9 +162,10 @@ public class Backpack{
 							}
 							break;
 						case 3:
-							
+							S.pendingAss();
 							break;
 						case 4:
+							S.viewGrades();
 							break;
 						case 5:
 							for (int k= 0; k< comments.size(); k++) comments.get(k).display();
@@ -231,6 +234,44 @@ class Student implements LearningEnv{
 		this.name = name;
 	}
 	
+	public void viewGrades() {
+		System.out.println("Graded submissions");
+		for (Material a: submittedAssessment) if (a.isGraded()) a.displayGrades();
+		System.out.println("----------------");
+		System.out.println("Ungraded submissions");
+		for (Material a: submittedAssessment) if (!(a.isGraded())) a.displayGrades();
+	}
+	
+	public void displaySol(Material A) {
+		for(Material a: submittedAssessment) if (a==A) System.out.println(A.getsol());
+	}
+	
+	public void pendingAss() {
+		Scanner sc = new Scanner(System.in);
+		for (int i=0; i<pendingAssessment.size(); i++) {
+			System.out.print("ID: " + i + " " );
+			pendingAssessment.get(i).display();
+		}
+		System.out.print("Enter id of assessment: ");
+		int id = sc.nextInt();
+		Material A = pendingAssessment.get(id);
+		if (A.type() == 'A') {
+			System.out.print("Enter filename of assignment: ");
+			String sol = sc.next();
+			if (!(sol.substring(sol.length()-4, sol.length()).equals(".zip"))) System.out.println("Invalid file format");
+			else {
+				this.submit(A);
+				A.submit(this, sol);
+			}
+		}
+		else {
+			A.display();
+			String sol = sc.next();
+			this.submit(A);
+			A.submit(this, sol);
+		}
+	
+	}
 	public void print() {
 		System.out.println(this.id + " - " + this.name);
 	}
@@ -284,6 +325,11 @@ interface Material {
 	void displayungradedList();
 	int getMM();
 	void grade(int marks, Student s);
+	char type();
+	void submit(Student s, String solution);
+	String getsol();
+	boolean isGraded();
+	void displayGrades();
 }
 
 interface LectureMaterial {
@@ -295,8 +341,9 @@ class Assignment implements Material {
 	private int marks;
 	private String problem;
 	private boolean graded = false;
-	List<Student> students_graded = new ArrayList<Student>();
-	List<Student> students_ungraded = new ArrayList<Student>();
+	private String solution;
+	private List<Student> students_graded = new ArrayList<Student>();
+	private List<Student> students_ungraded = new ArrayList<Student>();
 	
 	Assignment(int marks, String problem) {
 		this.MM = marks;
@@ -307,7 +354,12 @@ class Assignment implements Material {
 		for (Student S : students_ungraded) S.print();
 	}
 	
-	public void submit(Student s) {
+	public boolean isGraded() {
+		return this.graded;
+	}
+	
+	public void submit(Student s, String sub) {
+		this.solution = sub;
 		this.students_ungraded.add(s);
 	}
 	
@@ -321,9 +373,22 @@ class Assignment implements Material {
 		this.students_graded.add(s);
 	}
 		
+	public char type () {
+		return 'A';
+	}
+	
+	public void displayGrades() {
+		System.out.println("Submission: " + this.solution);
+		System.out.println("Marks: " + this.marks);
+	}
+	
 	public void display() {
 		System.out.println("Assignment: " + this.problem + "Max Marks: " + this.MM);
 		System.out.println("----------------");
+	}
+	
+	public String getsol() {
+		return this.solution;
 	}
 }
 
@@ -332,18 +397,30 @@ class Quiz implements Material {
 	private int marks;
 	private String problem;
 	private boolean graded = false;
-	List<Student> students_graded = new ArrayList<Student>();
-	List<Student> students_ungraded = new ArrayList<Student>();
+	private String solution;
+	private List<Student> students_graded = new ArrayList<Student>();
+	private List<Student> students_ungraded = new ArrayList<Student>();
 	
 	Quiz(String problem) {
 		this.problem = problem;
 	}
+	
+	public String getsol() {
+		return this.solution;
+	}
+	
+	
+	public boolean isGraded() {
+		return this.graded;
+	}
+	
 	@Override
 	public void displayungradedList() {
 		for (Student S : students_ungraded) S.print();
 	}
 	
-	public void submit(Student s) {
+	public void submit(Student s, String sub) {
+		this.solution = sub;
 		this.students_ungraded.add(s);
 	}
 	
@@ -357,11 +434,21 @@ class Quiz implements Material {
 		this.graded = true;
 		this.students_graded.add(s);
 	}
+	public char type () {
+		return 'Q';
+	}
+	
+	public void displayGrades() {
+		System.out.println("Submission: " + this.solution);
+		System.out.println("Marks: " + this.marks);
+	}
 	
 	public void display() {
 		System.out.println("Question: " + this.problem );
 		System.out.println("----------------");
 	}
+	
+
 }
 
 class Lectureslide implements LectureMaterial {
