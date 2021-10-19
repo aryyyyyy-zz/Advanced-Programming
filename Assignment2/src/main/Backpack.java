@@ -101,7 +101,8 @@ public class Backpack{
 									System.out.println("Max marks: " + assessment.get(id).getMM());
 									System.out.print("Marks secured: ");
 									int marks = sc.nextInt();
-									assessment.get(id).grade(marks, student);
+									int num3 = assessment.get(id).getid();
+									student.grade(marks, num3);
 									break;
 								}
 							}
@@ -234,6 +235,13 @@ class Student implements LearningEnv {
 		this.name = name;
 	}
 	
+	public void grade(int marks, int id) {
+		for (Material a: this.assessment) if(a.getid() == id) {
+			a.grade(marks);
+			break;
+		}
+	}
+	
 	public void setAssClose(int id) {
 		for (Material a: this.assessment) if (a.getid() == id) {
 			a.setClose();
@@ -343,7 +351,7 @@ interface Material {
 	void display();
 	int getMM();
 	int getid();
-	void grade(int marks, Student s);
+	void grade(int marks);
 	char type();
 	void submit(String solution);
 	String getsol();
@@ -403,7 +411,7 @@ class Assignment implements Material {
 		return this.MM;
 	}
 	
-	public void grade(int marks, Student s) {
+	public void grade(int marks) {
 		this.marks = marks;
 		this.graded = true;
 	}
@@ -478,7 +486,7 @@ class Quiz implements Material {
 	}
 	
 	@Override
-	public void grade(int marks, Student s) {
+	public void grade(int marks) {
 		this.marks = marks;
 		this.graded = true;
 	}
