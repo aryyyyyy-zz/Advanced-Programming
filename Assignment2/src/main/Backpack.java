@@ -14,11 +14,7 @@ interface LearningEnv {
 	void print();
 	String getName();
 	int getid();
-	void viewLec();
-	void viewAssessments();
-	void viewComments();
-	void addComments();
-	void logout();
+	Comment addComments();
 	
 }
 
@@ -28,6 +24,7 @@ public class Backpack{
 		Scanner sc = new Scanner(System.in);
 		
 		int choice = 0;
+		List<Integer> indices_open = new ArrayList<Integer>();
 		List<Instructor> instructorList = new ArrayList<Instructor>();
 		List<Student> studentList = new ArrayList<Student>();
 		List<Comment> comments = new ArrayList<Comment>();
@@ -77,8 +74,14 @@ public class Backpack{
 							for (int j=0; j<material.size(); j++) material.get(j).display();
 							break;
 						case 4:
+							for (int j=0; j<assessment.size(); j++) {
+								System.out.print("ID: " + j + " ");
+								assessment.get(j).display();
+							}
 							break;
 						case 5:
+							System.out.println("List of assessments");
+							
 							break;
 						case 6:
 							break;
@@ -86,7 +89,7 @@ public class Backpack{
 							for (int k= 0; k< comments.size(); k++) comments.get(k).display();
 							break;
 						case 8:
-							Comment c = new Comment(I.getName());
+							Comment c = I.addComments();
 							comments.add(c);
 							break;
 						case 9:
@@ -121,6 +124,10 @@ public class Backpack{
 							for (int j=0; j<material.size(); j++) material.get(j).display();
 							break;
 						case 2:
+							for (int j=0; j<assessment.size(); j++) {
+								System.out.print("ID: " + j + " ");
+								assessment.get(j).display();
+							}
 							break;
 						case 3:
 							break;
@@ -130,7 +137,7 @@ public class Backpack{
 							for (int k= 0; k< comments.size(); k++) comments.get(k).display();
 							break;
 						case 6:
-							Comment c = new Comment(S.getName());
+							Comment c = S.addComments();
 							comments.add(c);
 							break;
 						case 7:
@@ -213,36 +220,20 @@ class Student implements LearningEnv{
 				"6. Add comments\n" + 
 				"7. Logout");
 	}
+
 	
 	@Override
-	public void viewLec() {
-		
+	public Comment addComments() {
+		Comment c = new Comment(this.name);
+		return c;
 	}
 	
-	@Override
-	public void viewAssessments() {
-		
-	}
-	
-	@Override
-	public void viewComments() {
-		
-	}
-	
-	@Override
-	public void addComments() {
-		
-	}
-	
-	@Override
-	public void logout() {
-		
-	}
 }
 
 interface Material {
 	void display();
 }
+
 class Assignment implements Material {
 	private int MM;
 	private String problem;
@@ -420,27 +411,11 @@ class Instructor implements LearningEnv{
 		return M;
 
 	}
-	@Override
-	public void viewLec() {
+	
+	public Comment addComments() {
+		Comment c = new Comment(this.name);
+		return c;
 		
 	}
 	
-	@Override
-	public void viewAssessments() {
-		
-	}
-	
-	@Override
-	public void viewComments() {
-		
-	}
-	
-	public void addComments() {
-		
-	}
-	
-	@Override
-	public void logout() {
-		
-	}
 }
