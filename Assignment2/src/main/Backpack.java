@@ -24,12 +24,13 @@ public class Backpack{
 		Scanner sc = new Scanner(System.in);
 		
 		int choice = 0;
-		List<Integer> indices_open = new ArrayList<Integer>();
+		
 		List<Instructor> instructorList = new ArrayList<Instructor>();
 		List<Student> studentList = new ArrayList<Student>();
 		List<Comment> comments = new ArrayList<Comment>();
-		List<Material> material = new ArrayList<Material>();
+		List<LectureMaterial> material = new ArrayList<LectureMaterial>();
 		List<Material> assessment = new ArrayList<Material>();
+		List<Material> openAssessment = new ArrayList<Material>();
 		
 		Instructor I1 = new Instructor(0, "I0");
 		Instructor I2 = new Instructor(1, "I1");
@@ -63,12 +64,13 @@ public class Backpack{
 						val = sc.nextInt();
 						switch(val) {
 						case 1:
-							Material M = I.addMaterial();
+							LectureMaterial M = I.addMaterial();
 							if (M!=null) material.add(M);
 							break;
 						case 2:
 							Material A = I.addAssessment();
 							assessment.add(A);
+							openAssessment.add(A);
 							break;
 						case 3:
 							for (int j=0; j<material.size(); j++) material.get(j).display();
@@ -81,9 +83,37 @@ public class Backpack{
 							break;
 						case 5:
 							System.out.println("List of assessments");
-							
+							for (int j=0; j<assessment.size(); j++) {
+								System.out.print("ID: " + j + " ");
+								assessment.get(j).display();
+							}	
+							System.out.print("Enter ID of assessment to view submissions: ");
+							int id = sc.nextInt();
+							System.out.println("Choose ID from these ungraded submissions");
+							assessment.get(id).displayungradedList();
+							int num1 = sc.nextInt();
+							for (Student student : studentList) {
+								if (student.getid() == num1) {
+									System.out.println("Submission");
+									//incomplete
+									System.out.println("Max marks: " + assessment.get(id).getMM());
+									System.out.print("Marks secured: ");
+									int marks = sc.nextInt();
+									assessment.get(id).grade(marks, student);
+									break;
+								}
+							}
 							break;
 						case 6:
+							System.out.println("List of open assessments");
+							for (int j=0; j<openAssessment.size(); j++) {
+								System.out.print("ID: " + j + " ");
+								openAssessment.get(j).display();
+							}
+							System.out.print("Enter id of assignment to close: ");
+							int num = sc.nextInt();
+							A = openAssessment.remove(num);
+							for (int s=0; s<studentList.size(); s++) studentList.get(s).deadlineExpired(A);
 							break;
 						case 7:
 							for (int k= 0; k< comments.size(); k++) comments.get(k).display();
@@ -130,6 +160,7 @@ public class Backpack{
 							}
 							break;
 						case 3:
+							
 							break;
 						case 4:
 							break;
@@ -190,6 +221,9 @@ class Comment {
 class Student implements LearningEnv{
 	private String name;
 	private int id;
+	private List<Material> assessment = new ArrayList<Material>();
+	private List<Material> pendingAssessment = new ArrayList<Material>();
+	private List<Material> submittedAssessment = new ArrayList<Material>();
 	
 	public Student(int id, String name) {
 		// TODO Auto-generated constructor stub
@@ -203,6 +237,21 @@ class Student implements LearningEnv{
 	
 	public String getName() {
 		return this.name;
+	}
+	
+	public void addWork(Material A) {
+		assessment.add(A);
+		pendingAssessment.add(A);
+	}
+	
+	public void submit(Material A) {
+		this.pendingAssessment.remove(A);
+		this.submittedAssessment.add(A);
+	}
+	
+	
+	public void deadlineExpired(Material A) {
+		this.pendingAssessment.remove(A);
 	}
 	
 	public int getid() {
@@ -232,16 +281,46 @@ class Student implements LearningEnv{
 
 interface Material {
 	void display();
+	void displayungradedList();
+	int getMM();
+	void grade(int marks, Student s);
+}
+
+interface LectureMaterial {
+	void display();
 }
 
 class Assignment implements Material {
 	private int MM;
+	private int marks;
 	private String problem;
+	private boolean graded = false;
+	List<Student> students_graded = new ArrayList<Student>();
+	List<Student> students_ungraded = new ArrayList<Student>();
 	
 	Assignment(int marks, String problem) {
 		this.MM = marks;
 		this.problem = problem;
 	}
+	@Override
+	public void displayungradedList() {
+		for (Student S : students_ungraded) S.print();
+	}
+	
+	public void submit(Student s) {
+		this.students_ungraded.add(s);
+	}
+	
+	public int getMM() {
+		return this.MM;
+	}
+	
+	public void grade(int marks, Student s) {
+		this.marks = marks;
+		this.graded = true;
+		this.students_graded.add(s);
+	}
+		
 	public void display() {
 		System.out.println("Assignment: " + this.problem + "Max Marks: " + this.MM);
 		System.out.println("----------------");
@@ -250,18 +329,42 @@ class Assignment implements Material {
 
 class Quiz implements Material {
 	private static int MM = 1;
+	private int marks;
 	private String problem;
+	private boolean graded = false;
+	List<Student> students_graded = new ArrayList<Student>();
+	List<Student> students_ungraded = new ArrayList<Student>();
 	
 	Quiz(String problem) {
 		this.problem = problem;
 	}
+	@Override
+	public void displayungradedList() {
+		for (Student S : students_ungraded) S.print();
+	}
+	
+	public void submit(Student s) {
+		this.students_ungraded.add(s);
+	}
+	
+	public int getMM() {
+		return this.MM;
+	}
+	
+	@Override
+	public void grade(int marks, Student s) {
+		this.marks = marks;
+		this.graded = true;
+		this.students_graded.add(s);
+	}
+	
 	public void display() {
 		System.out.println("Question: " + this.problem );
 		System.out.println("----------------");
 	}
 }
 
-class Lectureslide implements Material {
+class Lectureslide implements LectureMaterial {
 	private String title;
 	private int count;
 	private String[] content;
@@ -288,7 +391,7 @@ class Lectureslide implements Material {
 	}
 }
 
-class Lecturevid implements Material{
+class Lecturevid implements LectureMaterial{
 	private String title;
 	private String file;
 	private Date date;
@@ -309,7 +412,6 @@ class Lecturevid implements Material{
 		System.out.println("Uploaded by: " + this.instructorName + "\n");
 		
 	}
-	
 }
 
 class Instructor implements LearningEnv{
@@ -348,8 +450,8 @@ class Instructor implements LearningEnv{
 				"9. Logout");
 	}
 	
-	public Material addMaterial() {
-		Material M = null;
+	public LectureMaterial addMaterial() {
+		LectureMaterial M = null;
 		int choice, num;
 		String title, file, dummy;
 		String [] slides;
@@ -409,7 +511,6 @@ class Instructor implements LearningEnv{
 		}	
 		//error handling missed relating to choice =/= 1,2
 		return M;
-
 	}
 	
 	public Comment addComments() {
