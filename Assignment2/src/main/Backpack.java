@@ -347,7 +347,7 @@ class Student implements LearningEnv {
 	
 }
 
-interface Material {
+interface Material { //assessment
 	void display();
 	int getMM();
 	int getid();
