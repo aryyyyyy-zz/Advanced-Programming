@@ -8,7 +8,7 @@ public class Nullmatrix extends Matrix{
     Nullmatrix() {
         this.id = count;
         this.rows = 3;
-        this.cols= 4;
+        this.cols= 3;
         label.add("Null matrix");
         count++;
     }
@@ -37,8 +37,9 @@ public class Nullmatrix extends Matrix{
     @Override
     public void display() {
         for (int i=0; i<rows; i++) {
+            System.out.print("[ ");
             for (int j = 0; j < cols; j++) System.out.print("0" + " ");
-            System.out.println();
+            System.out.println("]");
         }
     }
 

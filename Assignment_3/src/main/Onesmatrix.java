@@ -10,7 +10,7 @@ public class Onesmatrix extends Matrix{
     Onesmatrix() {
         this.id = count;
         this.rows = 3;
-        this.cols= 4;
+        this.cols= 3;
         label.add("Ones matrix");
         count++;
     }
@@ -35,8 +35,9 @@ public class Onesmatrix extends Matrix{
     @Override
     public void display() {
         for (int i=0; i<rows; i++) {
+            System.out.print("[ ");
             for (int j = 0; j < cols; j++) System.out.print("1" + " ");
-            System.out.println();
+            System.out.println("]");
         }
     }
 

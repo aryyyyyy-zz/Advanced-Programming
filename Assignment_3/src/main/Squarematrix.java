@@ -9,13 +9,15 @@ public class Squarematrix extends Matrix{
     Squarematrix() {
         super();
         this.id = count;
-        for (int i =0 ;i<3; i++) {
-            ArrayList<Float> row = new ArrayList<Float>();
-            row.add(0f);
-            row.add(1f);
-            row.add(2f);
-            this.matrix.add(row);
-        }
+            ArrayList<Float> row1 = new ArrayList<Float>();
+            row1.add(1f);
+            row1.add(2f);
+            ArrayList<Float> row2 = new ArrayList<Float>();
+        row2.add(3f);
+        row2.add(4f);
+            this.matrix.add(row1);
+            this.matrix.add(row2);
+
         this.determinant = this.calcdeterminant();
         label.add("Square matrix");
         count++;
@@ -113,13 +115,23 @@ public class Squarematrix extends Matrix{
         return det;
     }
 
+    public float getScalar() {
+        return 0f;
+    }
+
+    public boolean isSingleton() {
+        if (this.id >= 1400) return true;
+        return false;
+    }
+
     public boolean isSymmetric() {
         if (this.equalMatrices(this.trans())) return true;
         return false;
     }
 
     public boolean isSkewSymmetric() {
-        if (this.equalMatrices(this.trans().divbyscalar(-1))) return true;
+        Matrix m = this.trans().mulbyscalar(-1);
+        if (this.equalMatrices(m)) return true;
         return false;
     }
     public boolean isSingular() {

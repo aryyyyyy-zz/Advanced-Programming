@@ -22,7 +22,6 @@ public class Singletonmatrix extends Squarematrix{
         this.scalar = 2;
         this.determinant = 2;
         this.id = count;
-
         count++;
     }
 

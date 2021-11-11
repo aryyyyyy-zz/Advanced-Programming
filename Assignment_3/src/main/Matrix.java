@@ -28,7 +28,7 @@ public class Matrix {
         for (ArrayList<Float> rows : matrix) {
             System.out.print("[ ");
             for (Float ele : rows) {
-                System.out.print(ele + "\t");
+                System.out.print(ele + "\t\t");
             }
             System.out.println(" ]");
         }
@@ -40,11 +40,11 @@ public class Matrix {
         for (ArrayList<Float> rows : matrix) {
             ArrayList<Float> row = new ArrayList<Float>();
             for (Float ele : rows) {
-                row.add(ele*k);
+                if (ele*k==0) row.add(0f);
+                else row.add(ele*k);
             }
             result.matrix.add(row);
         }
-        result.display();
         return result;
     }
 
@@ -61,7 +61,6 @@ public class Matrix {
             }
             result.matrix.add(row);
         }
-        result.display();
         return result;
     }
 
@@ -166,9 +165,9 @@ public class Matrix {
     public boolean equalMatrices(Matrix m) {
         if (this.getcols() != m.getcols() || this.getrows() != m.getrows()) return false;
         else {
-            for (int i =0; i<this.getcols(); i++) {
-                for (int j = 0; j < this.getrows(); j++) {
-                    if (this.matrix.get(i).get(j) != m.matrix.get(i).get(j)) return false;
+            for (int i =0; i<this.getrows(); i++) {
+                for (int j = 0; j < this.getcols(); j++) {
+                    if (!(this.matrix.get(i).get(j).equals(m.matrix.get(i).get(j)))) return false;
                 }
             }
         }
@@ -184,7 +183,6 @@ public class Matrix {
             }
             result.matrix.add(row);
         }
-        result.display();
         return result;
     }
 
