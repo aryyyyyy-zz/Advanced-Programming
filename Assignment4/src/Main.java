@@ -54,7 +54,7 @@ public class Main {
 				int r = sc.nextInt();
 				System.out.print("Enter number of cols: ");
 				int c = sc.nextInt();
-				System.out.print("Enter 0 to create a color image and 1 to create a grayscale image: ");
+				System.out.print("Enter 0 to input a color image and 1 to input a grayscale image: ");
 				int v = sc.nextInt();
 				switch(v) {
 				case 0: 
@@ -62,7 +62,7 @@ public class Main {
 					for (int i=0; i<r; i++) {
 						ArrayList<colorImagePixel> row = new ArrayList<>();
 						for (int j=0; j<c; j++) {
-							System.out.println("Row " + i+1 + ", column" + j+1);
+							System.out.println("Row " + String.valueOf(i+1) + ", column" + String.valueOf(j+1));
 							row.add(takeColor());
 						}
 						matrix.add(row);
@@ -76,7 +76,7 @@ public class Main {
 						ArrayList<grayscaleImagePixel> row = new ArrayList<>();
 						
 						for (int j=0; j<c; j++) {
-							System.out.println("Row " + i+1 + ", column" + j+1);
+							System.out.println("Row " + String.valueOf(i+1) + ", column " + String.valueOf(j+1));
 							row.add(takeGray());
 						}
 						matrix2.add(row);
@@ -180,14 +180,16 @@ class Image <T extends pixel>{
 	
 	public static <T extends pixel> void getNegative(Image<T> I) {
 		ArrayList<ArrayList<pixel>> matrix = new ArrayList<>();
+		Image <pixel> negImg = new Image<>(matrix, I.getrows(), I.getcols());
 		for (ArrayList<T> row: I.matrix) {
 			ArrayList<pixel> newRow = new ArrayList<>();
 			for (T ele : row) {
 				newRow.add(ele.getNeg());
 			}
-			matrix.add(newRow);
+			negImg.matrix.add(newRow);
 		}
-		System.out.println(matrix);
+		System.out.println("The negative of the image will be: ");
+		System.out.println(negImg);
 	}
 
 	public static <T extends pixel> Image update(Image<T> I, T p, int x, int y) {
@@ -205,6 +207,14 @@ class Image <T extends pixel>{
 			str += "\n";
 		}
 		return str;
+	}
+	
+	public int getrows() {
+		return this.rows;
+	}
+	
+	public int getcols() {
+		return this.cols;
 	}
 }
 
