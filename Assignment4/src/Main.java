@@ -1,8 +1,6 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import com.sun.tools.javac.comp.Enter;
-
 public class Main {
 	private static ArrayList<Image> images = new ArrayList<>();
 	
@@ -89,17 +87,30 @@ public class Main {
 				}
 				break;
 			case 3:
-				System.out.print("Enter index (0-based) of image you want too update: ");
+				System.out.print("Enter index (0-based) of image you want to update: ");
 				System.out.println(images);
 				int index = sc.nextInt();
+				Image I = images.get(index);
+				pixel p;
 				System.out.println("Enter pixel location to be edited ");
 				System.out.print("Row: ");
 				int x = sc.nextInt();
 				System.out.print("Col: ");
 				int y = sc.nextInt();
-				
+				if (I.isGrayScale()) {
+					p = takeGray();
+				}
+				else {
+					p = takeColor(); 
+				}
+				Image.update(I, p, x, y);
 				break;
 			case 4: 
+				System.out.print("Enter index (0-based) of image you want to compute negative of: ");
+				System.out.println(images);
+				int index2 = sc.nextInt();
+				Image I2 = images.get(index2);
+				I2.getNegative(I2);
 				break;
 			case 5:
 				System.out.println(images);
@@ -148,13 +159,38 @@ class Image <T extends pixel>{
 	private int cols;
 		
 	Image(ArrayList<ArrayList<T>> matrix, int rows, int cols) {
-		
+		this.rows= rows;
+		this.cols = cols;
+		for (ArrayList<T> row: matrix) {
+			ArrayList<T> newRow = new ArrayList<>();
+			for (T ele : row) {
+				newRow.add(ele);
+			}
+			this.matrix.add(newRow);
+		}
 	}
 	
-	public static <I> void getNegative(Image I) {
-		
+	public boolean isGrayScale() {
+		return this.matrix.get(0).get(0).isGray();
+	}
+	
+	public static <T extends pixel> void getNegative(Image<T> I) {
+		ArrayList<ArrayList<pixel>> matrix = new ArrayList<>();
+		for (ArrayList<T> row: I.matrix) {
+			ArrayList<pixel> newRow = new ArrayList<>();
+			for (T ele : row) {
+				newRow.add(ele.getNeg());
+			}
+			matrix.add(newRow);
+		}
+		System.out.println(matrix);
 	}
 
+	public static <T extends pixel> Image update(Image<T> I, T p, int x, int y) {
+		I.matrix.get(x).remove(y);
+		I.matrix.get(x).add(y, p);
+		return I;
+	}
 	@Override
 	public String toString() {
 		String str = "";
@@ -170,8 +206,9 @@ class Image <T extends pixel>{
 
 interface pixel{
 	String displaypixel(); 
-	pixel update(int[] list);
 	pixel getPixel();
+	boolean isGray();
+	pixel getNeg();
 }
 
 class colorImagePixel implements pixel{
@@ -197,18 +234,22 @@ class colorImagePixel implements pixel{
 	}
 	
 	@Override
-	public pixel update(int [] list) {
-		return new colorImagePixel(list[0], list[1], list[2]);
-	}
-	
-	@Override
 	public pixel getPixel() {
 		return new colorImagePixel();
 	}
 	
 	@Override
+	public pixel getNeg() {
+		return new colorImagePixel(255-this.red, 255-this.green, 255-this.blue);
+	} 
+	@Override
 	public String toString() {
 		return ":" + this.red+ ":" + this.green +":" + this.blue+ ":/t";
+	}
+	
+	@Override
+	public boolean isGray() {
+		return false;
 	}
 }
 
@@ -225,22 +266,25 @@ class grayscaleImagePixel implements pixel{
 	
 	@Override
 	public String displaypixel() {
-		return "*gray:" + this.gray;
-	}
-	
-	@Override
-	public pixel update(int [] list) {
-		return new grayscaleImagePixel(list[0]);
+		return "*gray:" + this.gray +"*/t";
 	}
 	
 	@Override
 	public pixel getPixel() {
 		return new grayscaleImagePixel();
 	}
-	
+	@Override
+	public pixel getNeg() {
+		return new grayscaleImagePixel(255- this.gray);
+	} 
 	@Override
 	public String toString() {
 		return ":" + this.gray+ ":/t" ;
+	}
+	
+	@Override
+	public boolean isGray() {
+		return true;
 	}
 	
 }
