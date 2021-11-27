@@ -62,6 +62,7 @@ public class Main {
 					for (int i=0; i<r; i++) {
 						ArrayList<colorImagePixel> row = new ArrayList<>();
 						for (int j=0; j<c; j++) {
+							System.out.println("Row " + i+1 + ", column" + j+1);
 							row.add(takeColor());
 						}
 						matrix.add(row);
@@ -73,7 +74,9 @@ public class Main {
 					ArrayList<ArrayList<grayscaleImagePixel>> matrix2 = new ArrayList<>();
 					for (int i=0; i<r; i++) {
 						ArrayList<grayscaleImagePixel> row = new ArrayList<>();
+						
 						for (int j=0; j<c; j++) {
+							System.out.println("Row " + i+1 + ", column" + j+1);
 							row.add(takeGray());
 						}
 						matrix2.add(row);
@@ -87,7 +90,7 @@ public class Main {
 				}
 				break;
 			case 3:
-				System.out.print("Enter index (0-based) of image you want to update: ");
+				System.out.println("Enter index (0-based) of image you want to update: ");
 				System.out.println(images);
 				int index = sc.nextInt();
 				Image I = images.get(index);
@@ -106,7 +109,7 @@ public class Main {
 				Image.update(I, p, x, y);
 				break;
 			case 4: 
-				System.out.print("Enter index (0-based) of image you want to compute negative of: ");
+				System.out.println("Enter index (0-based) of image you want to compute negative of: ");
 				System.out.println(images);
 				int index2 = sc.nextInt();
 				Image I2 = images.get(index2);
@@ -144,11 +147,12 @@ public class Main {
 	}
 	
 	public static void displayMenu() {
-		System.out.println("1. Create image/n"
-				+ "2. Input image/n"
-				+ "3. Update image/n"
-				+ "4. Compute negative of image/n"
-				+ "5. Display image/n");
+		System.out.println("1. Create image\n"
+				+ "2. Input image\n"
+				+ "3. Update image\n"
+				+ "4. Compute negative of image\n"
+				+ "5. Display image");
+		System.out.println("---------------------");
 	}
 }
 
@@ -187,13 +191,13 @@ class Image <T extends pixel>{
 	}
 
 	public static <T extends pixel> Image update(Image<T> I, T p, int x, int y) {
-		I.matrix.get(x).remove(y);
 		I.matrix.get(x).add(y, p);
+		I.matrix.get(x).remove(y+1);
 		return I;
 	}
 	@Override
 	public String toString() {
-		String str = "";
+		String str = "\n";
 		for (ArrayList<T> row : matrix) {
 			for (T ele : row) {
 				str += ele;
@@ -204,8 +208,7 @@ class Image <T extends pixel>{
 	}
 }
 
-interface pixel{
-	String displaypixel(); 
+interface pixel{ 
 	pixel getPixel();
 	boolean isGray();
 	pixel getNeg();
@@ -229,8 +232,8 @@ class colorImagePixel implements pixel{
 	}
 	
 	@Override
-	public String displaypixel() {
-		return "*r:" + this.red+ "*g:" + this.green +"*b:" + this.blue+ "*/t";
+	public String toString() {
+		return "*r:" + this.red+ "*g:" + this.green +"*b:" + this.blue+ "*\t";
 	}
 	
 	@Override
@@ -242,10 +245,6 @@ class colorImagePixel implements pixel{
 	public pixel getNeg() {
 		return new colorImagePixel(255-this.red, 255-this.green, 255-this.blue);
 	} 
-	@Override
-	public String toString() {
-		return ":" + this.red+ ":" + this.green +":" + this.blue+ ":/t";
-	}
 	
 	@Override
 	public boolean isGray() {
@@ -265,8 +264,8 @@ class grayscaleImagePixel implements pixel{
 	}
 	
 	@Override
-	public String displaypixel() {
-		return "*gray:" + this.gray +"*/t";
+	public String toString() {
+		return "*gray:" + this.gray +"*\t";
 	}
 	
 	@Override
@@ -277,10 +276,6 @@ class grayscaleImagePixel implements pixel{
 	public pixel getNeg() {
 		return new grayscaleImagePixel(255- this.gray);
 	} 
-	@Override
-	public String toString() {
-		return ":" + this.gray+ ":/t" ;
-	}
 	
 	@Override
 	public boolean isGray() {

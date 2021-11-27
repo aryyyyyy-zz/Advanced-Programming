@@ -61,11 +61,12 @@ class Sortbooks implements Comparator<Book> {
 }
 
 public class Library {
-	static int K;
-	static int N;
-	static int slots;
-	static ArrayList<Book> booklist = new ArrayList<Book>();
-	static ArrayList<Book> sorted_booklist = new ArrayList<Book>();
+	private static int K;
+	private static int N;
+	private static int slots;
+	private static ArrayList<Book> booklist = new ArrayList<Book>();
+	private static ArrayList<Book> sorted_booklist = new ArrayList<Book>();
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Scanner sc = new Scanner(System.in);
